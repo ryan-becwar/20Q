@@ -1,5 +1,5 @@
  ,is it a fruit?,Is it commonly found on a sandwich?,Does it grow on a tree?,Does it grow underground?,Is it commonly found in pie?,Is it mostly green?,Does it grow on a bush?,Is it usually round?,Does it have seeds on the outside?
-apple,1,-1,1,-1,1,-1,-1,1,-1
+apple,1,-1,1,-1,1,0,-1,1,-1
 orange,1,-1,1,-1,-1,-1,-1,1,-1
 peach,1,-1,1,-1,1,-1,-1,1,-1
 strawberry,1,-1,-1,-1,1,-1,1,-1,1
