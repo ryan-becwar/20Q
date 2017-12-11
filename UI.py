@@ -5,4 +5,5 @@ class UI:
         self.game = twentyQ()
 
     def playGame(self):
+        print("Welcome to 20 Questions!")
         
