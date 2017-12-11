@@ -9,20 +9,24 @@ class twentyQ(object):
         self.questions = []
         self.answers = {}
         self.likelihood = {}
-        self.weightVals = {}
+        self.prevAnswers = {}
+        self.timesPlayed = {}
         self.questionsUsed = []
         self.remainingFood = []
         
-        data, weights = self.readData()
+        data, prevAnswers, times = self.readData()
         
-        self.processData(data, weights)
+        self.processData(data, prevAnswers, times)
         
     def readData(self):
         # get known data from csv
         data = pd.read_csv('tempData.csv')
 
-        # get weights from csv
-        weights = pd.read_csv('tempWeights.csv')
+        # get sums from csv
+        prevAnswers = pd.read_csv('tempWeights.csv')
+        
+        # get times played
+        times = pd.read_csv('timesPlayed.csv')
 
         # extract questions
         questions = list(data.dtypes.index)
@@ -31,19 +35,25 @@ class twentyQ(object):
         #extract data
         data = data.values
 
-        # extract weights
-        weights = weights.values
+        # extract previous answers
+        prevAnswers = prevAnswers.values
         
-        return data, weights
+        # extract times played
+        times = times.values
+        
+        return data, prevAnswers, times
     
-    def processData(self, data, weights):
+    def processData(self, data, prevAnswers, times):
         for i in data:
             self.answers[i[0]] = i[1:]
             self.likelihood[i[0]] = 0
             self.remainingFood.append(i[0])
     
-        for i in weights:
-            self.weightVals[i[0]] = i[1:]
+        for i in prevAnswers:
+            self.prevAnswers[i[0]] = i[1:]
+        
+        for i in times:
+            self.timesPlayed[i[0]] = i[1:]
             
     def getFirstQuestion(self):
         countYes = 0
@@ -108,9 +118,9 @@ class twentyQ(object):
     def updateLikelihood(self, currentQ, currentA):
         for i in self.answers:
             if self.answers[i][self.questions.index(currentQ)] is currentA:
-                self.likelihood[i] = self.likelihood[i] + self.weightVals[i][self.questions.index(currentQ)] *1
+                self.likelihood[i] = self.likelihood[i] + (self.prevAnswers[i][self.questions.index(currentQ)]/self.timesPlayed[i][self.questions.index(currentQ)])
             else:
-                self.likelihood[i] = self.likelihood[i] + self.weightVals[i][self.questions.index(currentQ)] *-1
+                self.likelihood[i] = self.likelihood[i] + self.prevAnswers[i][self.questions.index(currentQ)] *-1
                 
     def updateWeights(self, answer, correct):
         if correct is True:
