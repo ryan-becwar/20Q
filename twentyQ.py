@@ -13,6 +13,7 @@ class twentyQ(object):
         self.timesPlayed = {}
         self.questionsUsed = []
         self.remainingFood = []
+        self.answersGiven = []
         
         data, prevAnswers, times = self.readData()
         
@@ -75,24 +76,20 @@ class twentyQ(object):
                 
         choice = random.choice(possibleQ)
 
-        self.questionsUsed.append(np.argmin(nextQ))
+        self.questionsUsed.append(self.questions[np.argmin(nextQ)])
         return self.questions[np.argmin(nextQ)]
             
-    def answerQuestion(self, currentQ, currentA):
-        self.updateLikelihood(currentQ, currentA)
-
-        couldBe = []
-        for i in self.answers:
-            if self.answers[i][currentQ] is currentA:
-                couldBe.append(i)
-        self.remainingFood = list(set(self.remainingFood) & set(couldBe))
-
         
-    def getNextQuestion(self):
+    def getNextQuestion(self, currentQ, currentA):
+        couldBe = []
         nextQ = []
         possibleQ = []
         countYes = 0
         countNo = 0
+        for i in self.answers:
+            if self.answers[i][self.questions.index(currentQ)] is currentA:
+                couldBe.append(i)
+        self.remainingFood = list(set(self.remainingFood) & set(couldBe))
         for j in range(0,len(self.questions)):
             for i in self.remainingFood:
                 if self.answers[i][j] == 1:
@@ -106,40 +103,45 @@ class twentyQ(object):
             if nextQ[i] == np.min(nextQ):
                 possibleQ.append(i)
                 
-        remainingPossible = list(set(possibleQ) - set(self.questionsUsed))
-        if remainingPossible:
-            choice = random.choice(remainingPossible)
-            self.questionsUsed.append(choice)
-            return self.questions[choice]
-        else:
-            return None
+        choice = random.choice(possibleQ)
+        
+        self.questionsUsed.append(self.questions[choice])
+        return self.questions[choice]
     
     def convertAnswer(self, currentA):
-        if currentA is 'yes' or currentA is 'y':
+        if currentA is 'yes':
             return 1
-        elif currentA is 'no' or currentA is 'n':
-            return -1
-        else:
+        elif currentA is 'no':
             return 0
         
     def updateLikelihood(self, currentQ, currentA):
+        #append the answer
+        self.answersGiven.append(currentA)
+        
+        # update the likelihood
         for i in self.answers:
-            if self.answers[i][currentQ] is currentA:
-                self.likelihood[i] = self.likelihood[i] + (self.prevAnswers[i][currentQ]/self.timesPlayed[i][currentQ])
-            else:
-                self.likelihood[i] = self.likelihood[i] + self.prevAnswers[i][currentQ] *-1
+            if self.answers[i][self.questions.index(currentQ)] is currentA:
+                #if the answer is no then add the average number of 'nos' for that question
+                if currentA is 0:
+                    self.likelihood[i] = self.likelihood[i] + (1-(self.prevAnswers[i][self.questions.index(currentQ)]/self.timesPlayed[i][self.questions.index(currentQ)]))
+                #otherwise do the average number of yeses.  
+                else:
+                    self.likelihood[i] = self.likelihood[i] + (self.prevAnswers[i][self.questions.index(currentQ)]/self.timesPlayed[i][self.questions.index(currentQ)])
+                    
+                
                 
     def updateWeights(self, answer, correct):
         if correct is True:
             for i in self.questionsUsed:
-                self.weightVals[answer][i] = self.weightVals[answer][i] + (1-self.weightVals[answer][i])/2 
-                print(self.weightVals[answer][i])
+                self.prevAnswers[answer][self.questions.index(i)] += self.answersGiven[self.questionsUsed.index(i)]
+                self.timesPlayed[answer][self.questions.index(i)] += 1
+                
+        # we need to consider this part
         else:
             for i in self.questionsUsed:
-                self.weightVals[answer][i] = self.weightVals[answer][i] - (1-self.weightVals[answer][i])/2
-                if self.weightVals[answer][i] < .0625:
-                    self.weightVals[answer][i] = .5
-                    self.answers[answer][i] = -self.answers[answer][i]
+                if self.answers[answer][self.questions.index(i)] is 0:
+                    self.prevAnswers[answer][self.questions.index(i)] += 1
+                self.timesPlayed[answer][self.questions.index(i)] += 1
     
     def writeToCSV(self):
         Qs = cp.deepcopy(self.questions)
@@ -157,14 +159,25 @@ class twentyQ(object):
                     newlist.append(j)
                 writer.writerow({Qs[k]:newlist[k] for k in range(len(Qs))})
                     
-        # copy weights to csv
+        # copy prevAnswers to csv
         myfile = open('tempWeights.csv', 'w')
         with myfile:
             myFields = Qs
             writer = csv.DictWriter(myfile, fieldnames=myFields)    
             writer.writeheader()
-            for i in self.weightVals:
+            for i in self.prevAnswers:
                 newlist = [i]
-                for j in self.weightVals[i]:
+                for j in self.prevAnswers[i]:
+                    newlist.append(j)
+                writer.writerow({Qs[k]:newlist[k] for k in range(len(Qs))})
+                
+        myfile = open('timesPlayed.csv', 'w')
+        with myfile:
+            myFields = Qs
+            writer = csv.DictWriter(myfile, fieldnames=myFields)    
+            writer.writeheader()
+            for i in self.timesPlayed:
+                newlist = [i]
+                for j in self.timesPlayed[i]:
                     newlist.append(j)
                 writer.writerow({Qs[k]:newlist[k] for k in range(len(Qs))})
