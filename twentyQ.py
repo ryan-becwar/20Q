@@ -1,3 +1,8 @@
+import numpy as np
+import pandas as pd
+import csv
+import copy as cp
+import random
 
 class twentyQ(object):
     def __init__(self):
@@ -44,6 +49,7 @@ class twentyQ(object):
         countYes = 0
         countNo = 0
         nextQ = []
+        possibleQ = []
         for j in range(0,len(self.questions)):
             for i in self.answers:
                 if self.answers[i][j] == 1:
@@ -52,14 +58,23 @@ class twentyQ(object):
                     countNo = countNo + 1
             nextQ.append(abs(countYes - countNo))
             countYes = countNo = 0
+            
+        for i in range(len(nextQ)):
+            if nextQ[i] == np.min(nextQ):
+                possibleQ.append(i)
+                
+        choice = random.choice(possibleQ)
+
         self.questionsUsed.append(self.questions[np.argmin(nextQ)])
         return self.questions[np.argmin(nextQ)]
             
+        
     def getNextQuestion(self, currentQ, currentA):
         couldBe = []
+        nextQ = []
+        possibleQ = []
         countYes = 0
         countNo = 0
-        nextQ = []
         for i in self.answers:
             if self.answers[i][self.questions.index(currentQ)] is currentA:
                 couldBe.append(i)
@@ -72,8 +87,15 @@ class twentyQ(object):
                     countNo = countNo + 1
             nextQ.append(abs(countYes - countNo))
             countYes = countNo = 0
-        self.questionsUsed.append(self.questions[np.argmin(nextQ)])
-        return self.questions[np.argmin(nextQ)]
+            
+        for i in range(len(nextQ)):
+            if nextQ[i] == np.min(nextQ):
+                possibleQ.append(i)
+                
+        choice = random.choice(possibleQ)
+        
+        self.questionsUsed.append(self.questions[choice])
+        return self.questions[choice]
     
     def convertAnswer(self, currentA):
         if currentA is 'yes':
@@ -103,7 +125,29 @@ class twentyQ(object):
                     self.answers[answer][self.questions.index(i)] = -self.answers[answer][self.questions.index(i)]
     
     def writeToCSV(self):
-        data = pd.read_csv('tempData.csv')
-
-        # get weights from csv
-        weights = pd.read_csv('tempWeights.csv')
+        Qs = cp.deepcopy(self.questions)
+        Qs.insert(0, ' ')
+        
+        #copy data to csv
+        myfile = open('tempData.csv', 'w')
+        with myfile:
+            myFields = Qs
+            writer = csv.DictWriter(myfile, fieldnames=myFields)    
+            writer.writeheader()
+            for i in self.answers:
+                newlist = [i]
+                for j in self.answers[i]:
+                    newlist.append(j)
+                writer.writerow({Qs[k]:newlist[k] for k in range(len(Qs))})
+                    
+        # copy weights to csv
+        myfile = open('tempWeights.csv', 'w')
+        with myfile:
+            myFields = Qs
+            writer = csv.DictWriter(myfile, fieldnames=myFields)    
+            writer.writeheader()
+            for i in self.weightVals:
+                newlist = [i]
+                for j in self.weightVals[i]:
+                    newlist.append(j)
+                writer.writerow({Qs[k]:newlist[k] for k in range(len(Qs))})
