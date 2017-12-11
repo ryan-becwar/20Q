@@ -65,20 +65,24 @@ class twentyQ(object):
                 
         choice = random.choice(possibleQ)
 
-        self.questionsUsed.append(self.questions[np.argmin(nextQ)])
+        self.questionsUsed.append(np.argmin(nextQ))
         return self.questions[np.argmin(nextQ)]
             
-        
-    def getNextQuestion(self, currentQ, currentA):
+    def answerQuestion(self, currentQ, currentA):
+        self.updateLikelihood(currentQ, currentA)
+
         couldBe = []
+        for i in self.answers:
+            if self.answers[i][currentQ] is currentA:
+                couldBe.append(i)
+        self.remainingFood = list(set(self.remainingFood) & set(couldBe))
+
+        
+    def getNextQuestion(self):
         nextQ = []
         possibleQ = []
         countYes = 0
         countNo = 0
-        for i in self.answers:
-            if self.answers[i][self.questions.index(currentQ)] is currentA:
-                couldBe.append(i)
-        self.remainingFood = list(set(self.remainingFood) & set(couldBe))
         for j in range(0,len(self.questions)):
             for i in self.remainingFood:
                 if self.answers[i][j] == 1:
@@ -92,37 +96,40 @@ class twentyQ(object):
             if nextQ[i] == np.min(nextQ):
                 possibleQ.append(i)
                 
-        choice = random.choice(possibleQ)
-        
-        self.questionsUsed.append(self.questions[choice])
-        return self.questions[choice]
+        remainingPossible = list(set(possibleQ) - set(self.questionsUsed))
+        if remainingPossible:
+            choice = random.choice(remainingPossible)
+            self.questionsUsed.append(choice)
+            return self.questions[choice]
+        else:
+            return None
     
     def convertAnswer(self, currentA):
-        if currentA is 'yes':
+        if currentA is 'yes' or currentA is 'y':
             return 1
-        elif currentA is 'no':
+        elif currentA is 'no' or currentA is 'n':
             return -1
         else:
             return 0
         
     def updateLikelihood(self, currentQ, currentA):
         for i in self.answers:
-            if self.answers[i][self.questions.index(currentQ)] is currentA:
-                self.likelihood[i] = self.likelihood[i] + self.weightVals[i][self.questions.index(currentQ)] *1
+            if self.answers[i][currentQ] is currentA:
+                self.likelihood[i] = self.likelihood[i] + self.weightVals[i][currentQ] *1
             else:
-                self.likelihood[i] = self.likelihood[i] + self.weightVals[i][self.questions.index(currentQ)] *-1
+                self.likelihood[i] = self.likelihood[i] + self.weightVals[i][currentQ] *-1
                 
     def updateWeights(self, answer, correct):
         if correct is True:
             for i in self.questionsUsed:
-                self.weightVals[answer][self.questions.index(i)] = self.weightVals[answer][self.questions.index(i)] + (1-self.weightVals[answer][self.questions.index(i)])/2 
-                print(self.weightVals[answer][self.questions.index(i)])
+                self.weightVals[answer][i] = self.weightVals[answer][i] + (1-self.weightVals[answer][i])/2 
+                print(self.weightVals[answer][i])
         else:
             for i in self.questionsUsed:
-                self.weightVals[answer][self.questions.index(i)] = self.weightVals[answer][self.questions.index(i)] - (1-self.weightVals[answer][self.questions.index(i)])/2
-                if self.weightVals[answer][self.questions.index(i)] < .0625:
-                    self.weightVals[answer][self.questions.index(i)] = .5
-                    self.answers[answer][self.questions.index(i)] = -self.answers[answer][self.questions.index(i)]
+                self.weightVals[answer][i] = self.weightVals[answer][i] - (1-self.weightVals[answer][i])/2
+                if self.weightVals[answer][i] < .0625:
+                    self.weightVals[answer][i] = .5
+                    self.answers[answer][i] = -self.answers[answer][i]
     
     def writeToCSV(self):
         Qs = cp.deepcopy(self.questions)
