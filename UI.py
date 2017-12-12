@@ -49,10 +49,10 @@ class UI:
                 if correctAnswer not in list(self.game.answers):
                     self.getRemainingUnanswered()
 
-                self.game.updateWeights(correct, False)
+                self.game.updateWeights(correctAnswer, False)
 
             else:
-                self.game.updateWeights(correct, True)
+                self.game.updateWeights(selected, True)
 
             self.game.resetGame()
 
