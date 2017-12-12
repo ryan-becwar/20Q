@@ -148,12 +148,18 @@ class twentyQ(object):
                 
     def updateWeights(self, answer, correct):
         #if correct is True:
-        for i in self.questionsUsed:
-            self.prevAnswers[answer][i] += self.answersGiven[i]
-            plays = self.timesPlayed[answer][i]
-            self.prevAnswers[answer][i] = self.prevAnswers[answer][i] * (float(plays) / float(plays + 1)) + float(self.answersGiven[i]) / float(plays)
+        if answer in self.answers:
+            for i in self.questionsUsed:
+                plays = self.timesPlayed[answer][i]
+                self.prevAnswers[answer][i] = self.prevAnswers[answer][i] * (float(plays) / float(plays + 1)) + float(self.answersGiven[i]) / float(plays)
 
-            self.timesPlayed[answer][i] += 1
+                self.timesPlayed[answer][i] += 1
+
+        else:
+            for answer in self.answers:
+                for i in self.questionsUsed:
+                    self.prevAnswers[answer][i] = self.answersGiven[i]
+                    self.timesPlayed[answer][i] = 1
                 
         # we need to consider this part
         #else:
