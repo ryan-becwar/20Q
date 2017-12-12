@@ -61,7 +61,7 @@ class twentyQ(object):
         countNo = 0
         nextQ = []
         possibleQ = []
-        for j in range(0,len(self.questions)):
+        for j in range(len(self.questions)):
             for i in self.answers:
                 if self.answers[i][j] == 1:
                     countYes = countYes + 1
@@ -73,11 +73,12 @@ class twentyQ(object):
         for i in range(len(nextQ)):
             if nextQ[i] == np.min(nextQ):
                 possibleQ.append(i)
-                
+        print(nextQ)
+        print(possibleQ)
         choice = random.choice(possibleQ)
 
-        self.questionsUsed.append(self.questions[np.argmin(nextQ)])
-        return self.questions[np.argmin(nextQ)]
+        self.questionsUsed.append(self.questions[choice])
+        return self.questions[choice]
             
         
     def getNextQuestion(self, currentQ, currentA):
