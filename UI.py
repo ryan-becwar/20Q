@@ -13,7 +13,7 @@ class UI:
         self.game.answerQuestion(self.game.questionsUsed[0], answer)
 
         i = 0
-        while len(self.game.remainingFood) >= 1 and i < 10:
+        while len(self.game.remainingFood) > 1 and i < 10:
             i += 1
             nextQ = self.game.getNextQuestion()
             if not nextQ:
@@ -23,7 +23,7 @@ class UI:
 
             self.game.answerQuestion(self.game.questionsUsed[i], answer)
 
-        print(self.game.remainingFood)
+        print("Are you thinking of", self.game.remainingFood[0], "?")
 
 if __name__ == "__main__":
     ui = UI()

@@ -74,7 +74,7 @@ class twentyQ(object):
             if nextQ[i] == np.min(nextQ):
                 possibleQ.append(i)
         choice = random.choice(possibleQ)
-        print(nextQ)
+
         self.questionsUsed.append(choice)
         return self.questions[choice]
             
@@ -115,9 +115,9 @@ class twentyQ(object):
         self.remainingFood = list(set(self.remainingFood) & set(couldBe))
 
     def convertAnswer(self, currentA):
-        if currentA is 'yes' or currentA is 'y':
+        if currentA == 'yes' or currentA == 'y':
             return 1
-        elif currentA is 'no' or currentA is 'n':
+        elif currentA == 'no' or currentA == 'n':
             return 0
         
     def updateLikelihood(self, currentQ, currentA):
@@ -148,6 +148,8 @@ class twentyQ(object):
                 if self.answers[answer][i] is 0:
                     self.prevAnswers[answer][i] += 1
                 self.timesPlayed[answer][i] += 1
+    
+    
     
     def writeToCSV(self):
         Qs = cp.deepcopy(self.questions)
