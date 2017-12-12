@@ -168,7 +168,15 @@ class twentyQ(object):
         #            self.prevAnswers[answer][i] += 1
         #        self.timesPlayed[answer][i] += 1
     
-    
+    def askAnotherQuestion(self):
+        if len(self.questions) > len(self.questionsUsed):
+            possibleQ = list(range(0,len(self.questions)))
+            remaining = list(set(possibleQ)-set(self.questionsUsed))
+            self.questionsUsed.append(remaining[0])
+            return self.questions[remaining[0]]
+        else:
+            return None
+            
     
     def writeToCSV(self):
         Qs = cp.deepcopy(self.questions)
