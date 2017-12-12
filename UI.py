@@ -23,7 +23,18 @@ class UI:
 
             self.game.answerQuestion(self.game.questionsUsed[i], answer)
 
-        print("Are you thinking of", self.game.remainingFood[0], "?")
+        selected = self.game.remainingFood[0]
+        print("Are you thinking of", selected, "?")
+        correct = self.game.convertAnswer(input())
+
+        if correct == 0:
+            print("Enter the name of the object you are thinking of:")
+            correctAnswer = input()
+
+            self.game.updateWeights(correctAnswer, False)
+
+        else:
+            self.game.updateWeights(correct, True)
 
 if __name__ == "__main__":
     ui = UI()
