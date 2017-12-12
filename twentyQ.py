@@ -125,29 +125,32 @@ class twentyQ(object):
         self.answersGiven.append(currentA)
         
         # update the likelihood
-        for i in self.answers:
-            if self.answers[i][currentQ] is currentA:
+        for ans in self.answers:
+            if self.answers[ans][currentQ] is currentA:
                 #if the answer is no then add the average number of 'nos' for that question
                 if currentA is 0:
-                    self.likelihood[i] = self.likelihood[i] + (1-(self.prevAnswers[i][currentQ]/self.timesPlayed[i][currentQ]))
+                    self.likelihood[ans] = self.likelihood[ans] + (1-self.prevAnswers[ans][currentQ])
                 #otherwise do the average number of yeses.  
                 else:
-                    self.likelihood[i] = self.likelihood[i] + (self.prevAnswers[i][currentQ]/self.timesPlayed[i][currentQ])
+                    self.likelihood[ans] = self.likelihood[ans] + (self.prevAnswers[ans][currentQ])
                     
                 
                 
     def updateWeights(self, answer, correct):
-        if correct is True:
-            for i in self.questionsUsed:
-                self.prevAnswers[answer][i] += self.answersGiven[i]
-                self.timesPlayed[answer][i] += 1
+        #if correct is True:
+        for i in self.questionsUsed:
+            self.prevAnswers[answer][i] += self.answersGiven[i]
+            plays = self.timesPlayed[answer][i]
+            self.prevAnswers[answer][i] = self.prevAnswers[answer][i] * (float(plays) / float(plays + 1)) + float(self.answersGiven[i]) / float(plays)
+
+            self.timesPlayed[answer][i] += 1
                 
         # we need to consider this part
-        else:
-            for i in self.questionsUsed:
-                if self.answers[answer][i] is 0:
-                    self.prevAnswers[answer][i] += 1
-                self.timesPlayed[answer][i] += 1
+        #else:
+        #    for i in self.questionsUsed:
+        #        if self.answers[answer][i] is 0:
+        #            self.prevAnswers[answer][i] += 1
+        #        self.timesPlayed[answer][i] += 1
     
     def writeToCSV(self):
         Qs = cp.deepcopy(self.questions)
