@@ -35,7 +35,10 @@ class UI:
                     break
                 print(nextQ)
                 answer = self.game.convertAnswer(input())
-
+                while answer == -1:
+                    print(nextQ)
+                    print("Please answer with 'yes' or 'no'.")
+                    answer = self.game.convertAnswer(input())
                 self.game.answerQuestion(self.game.questionsUsed[i], answer)
 
             selected = self.game.remainingFood[0]
