@@ -1,11 +1,11 @@
- ,is it a fruit?,Is it commonly found on a sandwich?,Does it grow on a tree?,Does it grow underground?,Is it commonly found in pie?,Is it mostly green?,Does it grow on a bush?,Is it usually round?,Does it have seeds on the outside?
-apple,1,0,1,0,1,0,0,1,0
-orange,1,0,1,0,0,0,0,1,0
-peach,1,0,1,0,1,0,0,1,0
-strawberry,1,0,0,0,1,0,1,0,1
-raspberry,1,0,0,0,1,0,1,0,0
-carrot,0,0,0,1,0,0,0,0,0
-potato,0,0,0,1,0,0,0,1,0
-lettuce,0,1,0,0,0,1,0,1,0
-onion,0,1,0,1,0,0,0,1,0
-broccoli,0,0,0,0,0,1,1,0,0
+ ,is it a fruit?,Is it commonly found on a sandwich?,Does it grow on a tree?,Does it grow underground?,Is it commonly found in pie?,Is it mostly green?,Does it grow on a bush?,Is it usually round?,Does it have seeds on the outside?,Does it have a pit?
+apple,1,0,1,0,1,0,0,1,0,0
+orange,1,0,1,0,0,0,0,1,0,0
+peach,1,0,1,0,1,0,0,1,0,1
+strawberry,1,0,0,0,1,0,1,0,1,0
+raspberry,1,0,0,0,1,0,1,0,0,0
+carrot,0,0,0,1,0,0,0,0,0,0
+potato,0,0,0,1,0,0,0,1,0,0
+lettuce,0,1,0,0,0,1,0,1,0,0
+onion,0,1,0,1,0,0,0,1,0,0
+broccoli,0,0,0,0,0,1,1,0,0,0
