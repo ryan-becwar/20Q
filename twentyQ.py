@@ -122,6 +122,8 @@ class twentyQ(object):
             return 1
         elif currentA == 'no' or currentA == 'n':
             return 0
+        elif currentA == 'sometimes' or currentA == 'maybe' or currentA == 'unknown' or currentA == 's':
+            return 0.5
         else:
             return -1
         
