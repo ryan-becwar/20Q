@@ -119,6 +119,8 @@ class twentyQ(object):
             return 1
         elif currentA == 'no' or currentA == 'n':
             return 0
+        else:
+            return -1
         
     def updateLikelihood(self, currentQ, currentA):
         #append the answer
@@ -133,6 +135,14 @@ class twentyQ(object):
                 #otherwise do the average number of yeses.  
                 else:
                     self.likelihood[ans] = self.likelihood[ans] + (self.prevAnswers[ans][currentQ])
+                    
+    def getMostLikely(self):
+        likely = 0
+        for i in self.likelihood:
+            if self.likelihood[i] > likely:
+                ans = i
+                likely = self.likelihood[i]
+        return ans
                     
                 
                 

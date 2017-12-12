@@ -20,10 +20,14 @@ class UI:
                 break
             print(nextQ)
             answer = self.game.convertAnswer(input())
+            while answer == -1:
+                print(nextQ)
+                print("Please answer with 'yes' or 'no'.")
+                answer = self.game.convertAnswer(input())
 
             self.game.answerQuestion(self.game.questionsUsed[i], answer)
 
-        print("Are you thinking of", self.game.remainingFood[0], "?")
+        print("Is", self.game.getMostLikely(), "what you are thinking of?")
 
 if __name__ == "__main__":
     ui = UI()
