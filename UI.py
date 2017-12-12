@@ -19,7 +19,8 @@ class UI:
             i+=1
 
     def playGame(self):
-        while True:
+        keepPlaying = True
+        while keepPlaying:
             print("Welcome to 20 Questions!")
 
             print(self.game.getFirstQuestion())
@@ -50,6 +51,7 @@ class UI:
                 correctAnswer = input()
                 
                 if correctAnswer not in list(self.game.answers):
+                    print("Please help me learn about", correctAnswer,"by answering a few more questions.")
                     self.getRemainingUnanswered()
 
                 self.game.updateWeights(correctAnswer, False)
@@ -58,6 +60,10 @@ class UI:
                 self.game.updateWeights(selected, True)
 
             self.game.resetGame()
+            print("Would you like to keep playing?")
+            answer = self.game.convertAnswer(input())
+            if answer != 1:
+                keepPlaying = False
 
 if __name__ == "__main__":
     ui = UI()
