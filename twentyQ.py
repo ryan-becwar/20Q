@@ -4,6 +4,8 @@ import csv
 import copy as cp
 import random
 
+THRESHOLD = 2.5
+
 class twentyQ(object):
     def __init__(self):
         self.questions = []
@@ -60,20 +62,16 @@ class twentyQ(object):
         self.__init__()
             
     def getFirstQuestion(self):
-        countYes = 0
-        countNo = 0
         nextQ = []
         possibleQ = []
         for j in range(0,len(self.questions)):
-            for i in self.answers:
-                if self.answers[i][j] == 1:
-                    countYes = countYes + 1
-                elif self.answers[i][j] == 0:
-                    countNo = countNo + 1
-            nextQ.append(abs(countYes - countNo))
-            countYes = countNo = 0
-            
-        for i in range(0,len(nextQ)):
+            questionSum = 0
+            for i in self.remainingFood:
+                questionSum += self.prevAnswers[i][j]
+            #Sum of question score - value if all questions were .5
+            nextQ.append(abs(questionSum - float(len(self.questions)) / 2))
+
+        for i in range(len(nextQ)):
             if nextQ[i] == np.min(nextQ):
                 possibleQ.append(i)
         choice = random.choice(possibleQ)
@@ -82,27 +80,25 @@ class twentyQ(object):
         return self.questions[choice]
             
         
+    #Get the next question which divides the set of "remaining" answers the most
     def getNextQuestion(self):
         nextQ = []
         possibleQ = []
-        countYes = 0
-        countNo = 0
         for j in range(0,len(self.questions)):
+            questionSum = 0
             for i in self.remainingFood:
-                if self.answers[i][j] == 1:
-                    countYes = countYes + 1
-                elif self.answers[i][j] == 0:
-                    countNo = countNo + 1
-            nextQ.append(abs(countYes - countNo))
-            countYes = countNo = 0
+                questionSum += self.prevAnswers[i][j]
+            #Sum of question score - value if all questions were .5
+            nextQ.append(abs(questionSum - float(len(self.remainingFood)) / 2))
             
-        for i in range(len(nextQ)):
-            if nextQ[i] == np.min(nextQ):
+        unused = list(set(range(len(nextQ))) - set(self.questionsUsed))
+        minVal = min(list(nextQ[x] for x in unused))
+        for i in unused:
+            if nextQ[i] == minVal:
                 possibleQ.append(i)
                 
-        remainingPossible = list(set(possibleQ) - set(self.questionsUsed))
-        if remainingPossible:
-            choice = random.choice(remainingPossible)
+        if possibleQ:
+            choice = random.choice(possibleQ)
             self.questionsUsed.append(choice)
             return self.questions[choice]
         else:
@@ -111,11 +107,14 @@ class twentyQ(object):
     def answerQuestion(self, currentQ, currentA):
         self.updateLikelihood(currentQ, currentA)
 
-        couldBe = []
-        for i in self.answers:
-            if self.answers[i][currentQ] is currentA:
-                couldBe.append(i)
-        self.remainingFood = list(set(self.remainingFood) & set(couldBe))
+        #select all answers which have a likelihood within THRESHOLD of the maxlikelihood
+        self.remainingFood = list(k for k, v in self.likelihood.items() if v >= max(self.likelihood.values()) - THRESHOLD)
+
+        #couldBe = []
+        #for i in self.answers:
+        #    if self.answers[i][currentQ] is currentA:
+        #        couldBe.append(i)
+        #self.remainingFood = list(set(self.remainingFood) & set(couldBe))
 
     def convertAnswer(self, currentA):
         if currentA == 'yes' or currentA == 'y':
@@ -131,15 +130,18 @@ class twentyQ(object):
         #append the answer
         self.answersGiven.append(currentA)
         
+        #using weights from prevAnswers:
+        for ans in self.prevAnswers:
+            self.likelihood[ans] += 1 - abs(currentA - self.prevAnswers[ans][currentQ])
         # update the likelihood
-        for ans in self.answers:
-            if self.answers[ans][currentQ] is currentA:
-                #if the answer is no then add the average number of 'nos' for that question
-                if currentA is 0:
-                    self.likelihood[ans] = self.likelihood[ans] + (1-self.prevAnswers[ans][currentQ])
-                #otherwise do the average number of yeses.  
-                else:
-                    self.likelihood[ans] = self.likelihood[ans] + (self.prevAnswers[ans][currentQ])
+        #for ans in self.answers:
+        #    if self.answers[ans][currentQ] is currentA:
+        #        #if the answer is no then add the average number of 'nos' for that question
+        #        if currentA is 0:
+        #            self.likelihood[ans] = self.likelihood[ans] + (1-self.prevAnswers[ans][currentQ])
+        #        #otherwise do the average number of yeses.  
+        #        else:
+        #            self.likelihood[ans] = self.likelihood[ans] + (self.prevAnswers[ans][currentQ])
                     
     def getMostLikely(self):
         likely = 0
@@ -153,7 +155,7 @@ class twentyQ(object):
                 
     def updateWeights(self, answer, correct):
         #if correct is True:
-        if answer in self.answers:
+        if answer in self.prevAnswers:
             for i in self.questionsUsed:
                 plays = self.timesPlayed[answer][i]
                 self.prevAnswers[answer][i] = self.prevAnswers[answer][i] * (float(plays) / float(plays + 1)) + float(self.answersGiven[self.questionsUsed.index(i)]) / float(plays + 1)
