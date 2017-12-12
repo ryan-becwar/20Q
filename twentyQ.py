@@ -107,6 +107,15 @@ class twentyQ(object):
         self.questionsUsed.append(self.questions[choice])
         return self.questions[choice]
     
+    def answerQuestion(self, currentQ, currentA):
+        self.updateLikelihood(currentQ, currentA)
+
+        couldBe = []
+        for i in self.answers:
+            if self.answers[i][currentQ] is currentA:
+                couldBe.append(i)
+        self.remainingFood = list(set(self.remainingFood) & set(couldBe))
+
     def convertAnswer(self, currentA):
         if currentA is 'yes':
             return 1
