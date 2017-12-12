@@ -55,6 +55,9 @@ class twentyQ(object):
         
         for i in times:
             self.timesPlayed[i[0]] = i[1:]
+
+    def resetGame(self):
+        self.__init__()
             
     def getFirstQuestion(self):
         countYes = 0
@@ -151,16 +154,27 @@ class twentyQ(object):
         if answer in self.answers:
             for i in self.questionsUsed:
                 plays = self.timesPlayed[answer][i]
-                self.prevAnswers[answer][i] = self.prevAnswers[answer][i] * (float(plays) / float(plays + 1)) + float(self.answersGiven[i]) / float(plays)
+                self.prevAnswers[answer][i] = self.prevAnswers[answer][i] * (float(plays) / float(plays + 1)) + float(self.answersGiven[self.questionsUsed.index(i)]) / float(plays + 1)
 
                 self.timesPlayed[answer][i] += 1
 
         else:
-            for answer in self.answers:
-                for i in self.questionsUsed:
-                    self.prevAnswers[answer][i] = self.answersGiven[i]
-                    self.timesPlayed[answer][i] = 1
+            self.prevAnswers[answer] = []
+            self.timesPlayed[answer] = []
+            self.answers[answer] = []
+            for i in range(len(self.questions)):
+                #if the index shows up in the asked questions:
+                if i in self.questionsUsed:
+                    #answersGiven is a list of only asked questions, so we need to look up the index from questionsUsed
+                    self.prevAnswers[answer].append(self.answersGiven[self.questionsUsed.index(i)])
+                    self.answers[answer].append(self.answersGiven[self.questionsUsed.index(i)])
+                    self.timesPlayed[answer].append(1)
+                else:
+                    self.prevAnswers[answer].append(0.5)
+                    self.answers[answer].append(-1)
+                    self.timesPlayed[answer].append(0)
                 
+        self.writeToCSV()
         # we need to consider this part
         #else:
         #    for i in self.questionsUsed:
