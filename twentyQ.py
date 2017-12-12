@@ -61,22 +61,20 @@ class twentyQ(object):
         countNo = 0
         nextQ = []
         possibleQ = []
-        for j in range(len(self.questions)):
+        for j in range(0,len(self.questions)):
             for i in self.answers:
                 if self.answers[i][j] == 1:
                     countYes = countYes + 1
-                elif self.answers[i][j] == -1:
+                elif self.answers[i][j] == 0:
                     countNo = countNo + 1
             nextQ.append(abs(countYes - countNo))
             countYes = countNo = 0
             
-        for i in range(len(nextQ)):
+        for i in range(0,len(nextQ)):
             if nextQ[i] == np.min(nextQ):
                 possibleQ.append(i)
-        print(nextQ)
-        print(possibleQ)
         choice = random.choice(possibleQ)
-
+        print(nextQ)
         self.questionsUsed.append(self.questions[choice])
         return self.questions[choice]
             
@@ -95,7 +93,7 @@ class twentyQ(object):
             for i in self.remainingFood:
                 if self.answers[i][j] == 1:
                     countYes = countYes + 1
-                elif self.answers[i][j] == -1:
+                elif self.answers[i][j] == 0:
                     countNo = countNo + 1
             nextQ.append(abs(countYes - countNo))
             countYes = countNo = 0
