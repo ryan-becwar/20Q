@@ -75,20 +75,15 @@ class twentyQ(object):
                 possibleQ.append(i)
         choice = random.choice(possibleQ)
         print(nextQ)
-        self.questionsUsed.append(self.questions[choice])
+        self.questionsUsed.append(choice)
         return self.questions[choice]
             
         
-    def getNextQuestion(self, currentQ, currentA):
-        couldBe = []
+    def getNextQuestion(self):
         nextQ = []
         possibleQ = []
         countYes = 0
         countNo = 0
-        for i in self.answers:
-            if self.answers[i][self.questions.index(currentQ)] is currentA:
-                couldBe.append(i)
-        self.remainingFood = list(set(self.remainingFood) & set(couldBe))
         for j in range(0,len(self.questions)):
             for i in self.remainingFood:
                 if self.answers[i][j] == 1:
@@ -102,10 +97,13 @@ class twentyQ(object):
             if nextQ[i] == np.min(nextQ):
                 possibleQ.append(i)
                 
-        choice = random.choice(possibleQ)
-        
-        self.questionsUsed.append(self.questions[choice])
-        return self.questions[choice]
+        remainingPossible = list(set(possibleQ) - set(self.questionsUsed))
+        if remainingPossible:
+            choice = random.choice(remainingPossible)
+            self.questionsUsed.append(choice)
+            return self.questions[choice]
+        else:
+            return None
     
     def answerQuestion(self, currentQ, currentA):
         self.updateLikelihood(currentQ, currentA)
@@ -117,9 +115,9 @@ class twentyQ(object):
         self.remainingFood = list(set(self.remainingFood) & set(couldBe))
 
     def convertAnswer(self, currentA):
-        if currentA is 'yes':
+        if currentA is 'yes' or currentA is 'y':
             return 1
-        elif currentA is 'no':
+        elif currentA is 'no' or currentA is 'n':
             return 0
         
     def updateLikelihood(self, currentQ, currentA):
@@ -128,28 +126,28 @@ class twentyQ(object):
         
         # update the likelihood
         for i in self.answers:
-            if self.answers[i][self.questions.index(currentQ)] is currentA:
+            if self.answers[i][currentQ] is currentA:
                 #if the answer is no then add the average number of 'nos' for that question
                 if currentA is 0:
-                    self.likelihood[i] = self.likelihood[i] + (1-(self.prevAnswers[i][self.questions.index(currentQ)]/self.timesPlayed[i][self.questions.index(currentQ)]))
+                    self.likelihood[i] = self.likelihood[i] + (1-(self.prevAnswers[i][currentQ]/self.timesPlayed[i][currentQ]))
                 #otherwise do the average number of yeses.  
                 else:
-                    self.likelihood[i] = self.likelihood[i] + (self.prevAnswers[i][self.questions.index(currentQ)]/self.timesPlayed[i][self.questions.index(currentQ)])
+                    self.likelihood[i] = self.likelihood[i] + (self.prevAnswers[i][currentQ]/self.timesPlayed[i][currentQ])
                     
                 
                 
     def updateWeights(self, answer, correct):
         if correct is True:
             for i in self.questionsUsed:
-                self.prevAnswers[answer][self.questions.index(i)] += self.answersGiven[self.questionsUsed.index(i)]
-                self.timesPlayed[answer][self.questions.index(i)] += 1
+                self.prevAnswers[answer][i] += self.answersGiven[i]
+                self.timesPlayed[answer][i] += 1
                 
         # we need to consider this part
         else:
             for i in self.questionsUsed:
-                if self.answers[answer][self.questions.index(i)] is 0:
-                    self.prevAnswers[answer][self.questions.index(i)] += 1
-                self.timesPlayed[answer][self.questions.index(i)] += 1
+                if self.answers[answer][i] is 0:
+                    self.prevAnswers[answer][i] += 1
+                self.timesPlayed[answer][i] += 1
     
     def writeToCSV(self):
         Qs = cp.deepcopy(self.questions)
