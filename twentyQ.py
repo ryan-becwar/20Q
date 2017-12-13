@@ -4,7 +4,7 @@ import csv
 import copy as cp
 import random
 
-THRESHOLD = 2.5
+THRESHOLD = 1.8
 
 class twentyQ(object):
     def __init__(self):
@@ -60,25 +60,6 @@ class twentyQ(object):
 
     def resetGame(self):
         self.__init__()
-            
-    def getFirstQuestion(self):
-        nextQ = []
-        possibleQ = []
-        for j in range(0,len(self.questions)):
-            questionSum = 0
-            for i in self.remainingFood:
-                questionSum += self.prevAnswers[i][j]
-            #Sum of question score - value if all questions were .5
-            nextQ.append(abs(questionSum - float(len(self.questions)) / 2))
-
-        for i in range(len(nextQ)):
-            if nextQ[i] == np.min(nextQ):
-                possibleQ.append(i)
-        choice = random.choice(possibleQ)
-
-        self.questionsUsed.append(choice)
-        return self.questions[choice]
-            
         
     #Get the next question which divides the set of "remaining" answers the most
     def getNextQuestion(self):
@@ -120,12 +101,6 @@ class twentyQ(object):
         #select all answers which have a likelihood within THRESHOLD of the maxlikelihood
         self.remainingFood = list(k for k, v in self.likelihood.items() if v >= max(self.likelihood.values()) - THRESHOLD)
 
-        #couldBe = []
-        #for i in self.answers:
-        #    if self.answers[i][currentQ] is currentA:
-        #        couldBe.append(i)
-        #self.remainingFood = list(set(self.remainingFood) & set(couldBe))
-
     def convertAnswer(self, currentA):
         if currentA == 'yes' or currentA == 'y':
             return 1
@@ -143,15 +118,6 @@ class twentyQ(object):
         #using weights from prevAnswers:
         for ans in self.prevAnswers:
             self.likelihood[ans] += 1 - abs(currentA - self.prevAnswers[ans][currentQ])
-        # update the likelihood
-        #for ans in self.answers:
-        #    if self.answers[ans][currentQ] is currentA:
-        #        #if the answer is no then add the average number of 'nos' for that question
-        #        if currentA is 0:
-        #            self.likelihood[ans] = self.likelihood[ans] + (1-self.prevAnswers[ans][currentQ])
-        #        #otherwise do the average number of yeses.  
-        #        else:
-        #            self.likelihood[ans] = self.likelihood[ans] + (self.prevAnswers[ans][currentQ])
                     
     def getMostLikely(self):
         likely = 0
@@ -189,12 +155,6 @@ class twentyQ(object):
                     self.timesPlayed[answer].append(0)
                 
         self.writeToCSV()
-        # we need to consider this part
-        #else:
-        #    for i in self.questionsUsed:
-        #        if self.answers[answer][i] is 0:
-        #            self.prevAnswers[answer][i] += 1
-        #        self.timesPlayed[answer][i] += 1
     
     def askAnotherQuestion(self):
         if len(self.questions) > len(self.questionsUsed):
