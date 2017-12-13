@@ -71,7 +71,7 @@ class twentyQ(object):
             for i in self.remainingFood:
                 questionSum += self.prevAnswers[i][j]
                 #score to determine decisive answers to the question are
-                decisiveScore += abs(self.prevAnswers[i][j] - .5)
+                decisiveScore += .5 - abs(self.prevAnswers[i][j] - .5)
             #score to determine how much the question divides the dataset
             dividingScore = abs(questionSum - float(len(self.remainingFood)) / 2)
 
