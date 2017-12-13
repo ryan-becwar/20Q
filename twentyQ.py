@@ -119,14 +119,6 @@ class twentyQ(object):
         for ans in self.prevAnswers:
             self.likelihood[ans] += 1 - abs(currentA - self.prevAnswers[ans][currentQ])
                     
-    def getMostLikely(self):
-        likely = 0
-        for i in self.likelihood:
-            if self.likelihood[i] > likely:
-                ans = i
-                likely = self.likelihood[i]
-        return ans
-                    
                 
                 
     def updateWeights(self, answer, correct):
