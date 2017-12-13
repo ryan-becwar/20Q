@@ -121,8 +121,7 @@ class twentyQ(object):
                     
                 
                 
-    def updateWeights(self, answer, correct):
-        #if correct is True:
+    def updateWeights(self, answer):
         if answer in self.prevAnswers:
             for i in self.questionsUsed:
                 plays = self.timesPlayed[answer][i]
