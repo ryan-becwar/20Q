@@ -12,7 +12,7 @@ class UI:
             answer = self.game.convertAnswer(input())
             while answer == -1:
                 print(nextQ)
-                print("Please answer with 'yes' or 'no'.")
+                print("Please answer with 'yes', 'no', 'sometimes', 'maybe', or 'unknown'.")
                 answer = self.game.convertAnswer(input())
             self.game.answerQuestion(self.game.questionsUsed[i], answer)
             nextQ = self.game.askAnotherQuestion()
@@ -40,7 +40,7 @@ class UI:
                 answer = self.game.convertAnswer(input())
                 while answer == -1:
                     print(nextQ)
-                    print("Please answer with 'yes' or 'no'.")
+                    print("Please answer with 'yes', 'no', 'sometimes', 'maybe', or 'unknown'.")
                     answer = self.game.convertAnswer(input())
                 self.game.answerQuestion(self.game.questionsUsed[i], answer)
 
@@ -56,7 +56,7 @@ class UI:
                 print("Enter the name of the object you are thinking of:")
                 correctAnswer = input()
                 
-                if correctAnswer not in list(self.game.answers):
+                if correctAnswer not in list(self.game.answers) and len(self.game.questionsUsed) < len(self.game.questions):
                     print("Please help me learn about", correctAnswer,"by answering a few more questions.")
                     self.getRemainingUnanswered()
 
