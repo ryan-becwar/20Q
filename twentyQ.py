@@ -86,13 +86,23 @@ class twentyQ(object):
         possibleQ = []
         for j in range(0,len(self.questions)):
             questionSum = 0
+            decisiveScore = 0
             for i in self.remainingFood:
                 questionSum += self.prevAnswers[i][j]
-            #Sum of question score - value if all questions were .5
-            nextQ.append(abs(questionSum - float(len(self.remainingFood)) / 2))
+                #score to determine decisive answers to the question are
+                decisiveScore += abs(self.prevAnswers[i][j] - .5)
+            #score to determine how much the question divides the dataset
+            dividingScore = abs(questionSum - float(len(self.remainingFood)) / 2)
+
+            #aggregate of two scores
+            nextQ.append(dividingScore + 0.8*decisiveScore)
             
         unused = list(set(range(len(nextQ))) - set(self.questionsUsed))
-        minVal = min(list(nextQ[x] for x in unused))
+        unusedVals = list(nextQ[x] for x in unused)
+        if not unusedVals:
+            return None
+        minVal = min(unusedVals)
+
         for i in unused:
             if nextQ[i] == minVal:
                 possibleQ.append(i)
