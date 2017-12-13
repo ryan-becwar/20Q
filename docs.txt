@@ -1,0 +1,36 @@
+* $getNextQuestion()$
+    * (Brief) Gets the best unasked question
+    * (Details) Determines the question which most effectively divides the items in the `remainingFood` list.  To do this, it considers all unasked questions, calculates a score for how dividing that question is (similar number of yes/no answers) and for how decisive the question is (sum of difference from neutral .5 score, inverted), and aggregates these two values. If there are two questions with an equl score, it will select one at random.
+    * (Inputs) None
+    * (Outputs) None
+    * (Returns) The text of the best question
+    * (Notes) Relies on the `TwentyQ` class
+
+* $answerQuestion(currentQ, currentA)$
+    * (Brief) Updates the class to reflect an answered question
+    * (Details) Calls the `updateLikelihood` method, then updates `remainingFood` to all answers which have a likelihood within THRESHOLD of the highest likelihood answer
+    * (Inputs)
+        * `CurrentQ` (Integer) Index of current question
+        * `CurrentA` (Float) The 0-1 value of answer corresponding to no-yes
+    * (Outputs) None
+    * (Returns) None
+    * (Notes) Relies on the `TwentyQ` class
+
+* $updateLikelihood(currentQ, currentA)$
+    * (Brief) Updates the likelihood dictionary
+    * (Details) Adds 1 - the difference between the given answer and the expected answer for each item
+    * (Inputs)
+        * `CurrentQ` (Integer) Index of current question
+        * `CurrentA` (Float) The 0-1 value of answer corresponding to no-yes
+    * (Outputs) None
+    * (Returns) None
+    * (Notes) Relies on the `TwentyQ` class
+
+* $updateWeights(answer)$
+    * (Brief) Learning step to update the weights table
+    * (Details) If the item already exists in the weights table(`prevAnswers`), updates the value to the average of previous answers and the new answer. Otherwise, create a new entry in the weights table with initial values corresponding to the given answer. Calls `writeToCSV()` to save the changes.
+    * (Inputs)
+        * `answer` (String) Item the answer corresponds to.
+    * (Outputs) None
+    * (Returns) None
+    * (Notes) Relies on the `TwentyQ` class

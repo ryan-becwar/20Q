@@ -60,10 +60,10 @@ class UI:
                     print("Please help me learn about", correctAnswer,"by answering a few more questions.")
                     self.getRemainingUnanswered()
 
-                self.game.updateWeights(correctAnswer, False)
+                self.game.updateWeights(correctAnswer)
 
             else:
-                self.game.updateWeights(selected, True)
+                self.game.updateWeights(selected)
 
             self.game.resetGame()
             print("Would you like to keep playing?")
