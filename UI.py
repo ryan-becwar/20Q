@@ -23,13 +23,13 @@ class UI:
         while keepPlaying:
             print("Welcome to 20 Questions!")
 
-            print(self.game.getFirstQuestion())
+            print(self.game.getNextQuestion())
             answer = self.game.convertAnswer(input())
 
             self.game.answerQuestion(self.game.questionsUsed[0], answer)
 
             i = 0
-            while len(self.game.remainingFood) > 1:
+            while len(self.game.remainingFood) > 1 and i < 20:
                 i += 1
                 nextQ = self.game.getNextQuestion()
                 if not nextQ:
